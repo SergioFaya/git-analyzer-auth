@@ -38,9 +38,10 @@ module.exports = () => {
  */
 function generatePayload() {
     return new Promise((resolve, reject) => {
+        // Math.floor o Math.round 
         var iat = Math.floor(Date.now()/1000);
         //iat = iat.substring(0, 10);
-        var exp = (Math.floor(Date.now()/1000) + (60 * 60));
+        var exp = (Math.floor(Date.now()/1000) + (10 * 60));
         //exp = exp.substring(0, 10);
         var payload = {
             // issued at time
