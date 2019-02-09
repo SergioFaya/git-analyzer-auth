@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const NodeRsa = require('node-rsa');
-const config = require('../config/config');
+const config = require('../../config/config');
 
 // add memoization to tokens
 module.exports = () => {
