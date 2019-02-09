@@ -22,8 +22,22 @@ app.use((_req, res, next) => {
 // router usage
 app.use(require('./src/routers/routerLogin'));
 app.use(require('./src/routers/routerAuthInstallation'));
+app.use((req, res) => {
+	res.send(`<html>
+    <body>
+        <h1>Endpoints</h1>
+        <ul>
+            <li>/login</li>
+            <li>/login/check</li>
+            <li>/logout</li>
+            <li>/login</li>
+            <li>/installation</li>
+            <li>/installation/check</li>
+        </ul>
+    </body>
+</html>`);
+});
 
-// app.use('/',router);
 // listen(port,host,backlog,callback)
 app.listen(config.app.port, config.app.source, () => {
 	console.log('running on port', config.app.port);
@@ -33,14 +47,14 @@ app.listen(config.app.port, config.app.source, () => {
 		message: 'Server started on port 2500',
 	});
 	fs.readFile(config.resources.private_key, (err, data) => {
-		if(err){
+		if (err) {
 			logger.log({
 				date: Date.now().toString(),
 				level: 'error',
 				message: 'Error when reading the private key certificate',
 				trace: err,
 			});
-		}else{
+		} else {
 			config.resources.private_key_buffer = data;
 		}
 	});
