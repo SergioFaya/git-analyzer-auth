@@ -44,7 +44,7 @@ app.listen(config.app.port, config.app.source, () => {
 	logger.log({
 		date: Date.now().toString(),
 		level: 'info',
-		message: 'Server started on port 2500',
+		message: `Server started on port ${config.app.port}`,
 	});
 	fs.readFile(config.resources.private_key, (err, data) => {
 		if (err) {

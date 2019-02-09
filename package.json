@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "node server.js local",
     "deploy": "node server.js deploy",
     "help": "echo \"Include the option deploy for deploying \" && exit 1"
   },

@@ -1,9 +1,9 @@
 // If an argument is provided in the initialization
 // of the server, parses it to number and uses it in the config
-const deployType = +(process.argv[3]);
-const argPort = +(process.argv[4]);
+const deployType = process.argv[2];
+const argPort = +(process.argv[3]);
 
-const release = {
+const deploy = {
 	app: {
 		port: argPort || 3000,
 		source: '0.0.0.0',
@@ -59,9 +59,9 @@ const local = {
 	},
 }
 
-const config = [
-	release,
+const config = {
+	deploy,
 	local
-]
+}
 
-module.exports = config[deployType] || local;
+module.exports = config[deployType];
