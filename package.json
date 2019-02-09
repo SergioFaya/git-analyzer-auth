@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "deploy": "node server.js deploy",
+    "help": "echo \"Include the option deploy for deploying \" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -24,7 +26,12 @@
     "express": "^4.16.4",
     "jsonwebtoken": "^8.4.0",
     "node-rsa": "^1.0.3",
+    "redis": "^2.8.0",
     "superagent": "^4.1.0",
     "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.13.0",
+    "eslint-config-google": "^0.12.0"
   }
 }
