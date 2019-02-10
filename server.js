@@ -4,14 +4,15 @@ const logger = require('./src/util/logger/Logger')
 const config = require('./src/config/config');
 // revisar pa que sirve bodyParser y cors
 const bodyParser = require('body-parser');
-const cors = require('cors');
 // fs for reading the private key and convert it to a buffer
 const fs = require('fs');
 
+const cors = require('cors');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
+//app.use(cors());
 
+// alow cors
 app.use((_req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Credentials', 'true');
@@ -19,6 +20,7 @@ app.use((_req, res, next) => {
 	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, token');
 	next();
 });
+
 // router usage
 app.use(require('./src/routers/routerLogin'));
 app.use(require('./src/routers/routerAuthInstallation'));

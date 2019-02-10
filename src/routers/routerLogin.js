@@ -16,8 +16,20 @@ var createUserToken = require('../manageTokens/oauth/createUserToken');
  * Scopes -> several scopes are separed by a space
  * https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
  */
+
 router.get('/login', (_req, res) => {
-	res.redirect(`https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}`);
+	// send the redirection address that will be handled by the client
+
+	/*
+	res.status(202).json({
+		success: true,
+		data: `https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}`,
+		message: 'datas'
+	});
+
+	*/
+	// doesnt work when consumed as api by the angular client
+	res.status(302).redirect(`https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}`);
 });
 
 /**
@@ -31,7 +43,7 @@ router.get('/login', (_req, res) => {
  * github sends back the acess token, which we store in our db
  */
 
-router.get('/auth', (req, res) => {
+router.get('/login', (req, res) => {
 	superagent
 		.post('https://github.com/login/oauth/access_token')
 		.send({
@@ -44,11 +56,15 @@ router.get('/auth', (req, res) => {
 			const accessToken = result.body.access_token;
 			createUserToken(accessToken, (mytoken) => {
 				if (mytoken) {
+					// Changing to redirect to angular
+					
 					res.status(202).json({
 						message: 'Successfully authenticated',
 						token: mytoken,
+						accessToken,
 						success: true,
 					});
+					
 				} else {
 					res.status(500).json({
 						message: 'Could not authenticate',
@@ -72,7 +88,7 @@ router.get('/auth', (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
-	var token = req.header('x-header-token');
+	var token = req.header('x-access-token');
 	if (token) {
 		cancelToken(token, (result) => {
 			if (result) {
@@ -94,14 +110,14 @@ router.post('/logout', (req, res) => {
 		});
 	} else {
 		res.status(404).json({
-			message: 'no token provided, must pass token as header x-header-token',
+			message: 'no token provided, must pass token as header x-access-token',
 			success: false,
 		});
 	}
 });
 
 router.get('/login/check', (req, res) => {
-	var token = req.header('x-header-token');
+	var token = req.header('x-access-token');
 	if (token) {
 		checkMyToken(token, (expired) => {
 			if (expired) {
@@ -120,7 +136,7 @@ router.get('/login/check', (req, res) => {
 		});
 	} else {
 		res.status(404).json({
-			message: 'no token provided, must pass token as header x-header-token',
+			message: 'no token provided, must pass token as header x-access-token',
 			success: false,
 		});
 	}
