@@ -24,11 +24,11 @@ module.exports = (githubToken, callback) => {
                         trace: err.toString(),
                     })
                 } else {
-                    userManager.setUser(encoded, result.body.id, (reply) => {
+                    userManager.setUser(encoded, result.body.id, (err,reply) => {
                         if(reply){
-                            callback(encoded);
+                            callback(null,encoded);
                         }else{
-                            callback(undefined);
+                            callback(err);
                         }
                     });
                 }

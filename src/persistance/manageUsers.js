@@ -14,9 +14,9 @@ module.exports = {
                     trace: err.message,
                     token,
                 });
-                callback(undefined);
+                callback(err);
             } else {
-                callback(reply);
+                callback(null, reply);
             }
         });
     }, setUser: (token, userId, callback) => {
@@ -30,9 +30,9 @@ module.exports = {
                     token,
                     userId,
                 });
-                callback(undefined);
+                callback(err);
             } else {
-                callback(reply);
+                callback(null, reply);
             }
         });
     }, deleteUser: (token, callback) => {
@@ -45,9 +45,9 @@ module.exports = {
                     trace: err.message,
                     token,
                 });
-                callback(undefined);
+                callback(err);
             } else {
-                callback(reply);
+                callback(null, reply);
             }
         });
     }, existsUser: (token) => {
@@ -60,10 +60,10 @@ module.exports = {
                     trace: err.message,
                     token,
                 });
-                callback(undefined);                
+                callback(err);
             } else {
                 // reply is 1 or 0 for true or false
-                callback(reply == 1);
+                callback(null, reply == 1);
             }
         });
     }

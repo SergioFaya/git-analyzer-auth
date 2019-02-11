@@ -33,7 +33,7 @@ router.get('/installation', (req, res) => {
 });
 
 router.get('/installation/check', (req, res) => {
-    var token = req.header('x-access-token');
+    var token = req.header('x-install-token');
     if (token) {
         var expired = isTokenExpired(token);
         if (expired) {
@@ -51,7 +51,7 @@ router.get('/installation/check', (req, res) => {
         }
     } else {
         res.status(404).json({
-            message: 'no token provided, must pass token as header x-access-token',
+            message: 'no token provided, must pass token as header x-install-token',
             success: false,
         });
     }

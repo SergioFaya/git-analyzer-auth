@@ -20,16 +20,16 @@ var createUserToken = require('../manageTokens/oauth/createUserToken');
 router.get('/login', (_req, res) => {
 	// send the redirection address that will be handled by the client
 
-	/*
+
 	res.status(202).json({
 		success: true,
 		data: `https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}`,
 		message: 'datas'
 	});
 
-	*/
+
 	// doesnt work when consumed as api by the angular client
-	res.status(302).redirect(`https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}`);
+	// res.status(302).redirect(`https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}`);
 });
 
 /**
@@ -43,7 +43,7 @@ router.get('/login', (_req, res) => {
  * github sends back the acess token, which we store in our db
  */
 
-router.get('/login', (req, res) => {
+router.get('/auth', (req, res) => {
 	superagent
 		.post('https://github.com/login/oauth/access_token')
 		.send({
@@ -54,22 +54,21 @@ router.get('/login', (req, res) => {
 		.set('Accept', 'application/json')
 		.then((result) => {
 			const accessToken = result.body.access_token;
-			createUserToken(accessToken, (mytoken) => {
-				if (mytoken) {
+			createUserToken(accessToken, (err, mytoken) => {
+				if (err) {
+					res.status(500).json({
+						message: 'Could not authenticate',
+						token: mytoken,
+						success: false,
+						err
+					});
+				} else {
 					// Changing to redirect to angular
-					
 					res.status(202).json({
 						message: 'Successfully authenticated',
 						token: mytoken,
 						accessToken,
 						success: true,
-					});
-					
-				} else {
-					res.status(500).json({
-						message: 'Could not authenticate',
-						token: mytoken,
-						success: false,
 					});
 				}
 			});
@@ -90,8 +89,13 @@ router.get('/login', (req, res) => {
 router.post('/logout', (req, res) => {
 	var token = req.header('x-access-token');
 	if (token) {
-		cancelToken(token, (result) => {
-			if (result) {
+		cancelToken(token, (err, result) => {
+			if (err) {
+				res.status(202).json({
+					message: 'cant remove the session',
+					success: false,
+				});
+			} else {
 				logger.log({
 					date: Date.now().toString(),
 					level: 'info',
@@ -100,11 +104,6 @@ router.post('/logout', (req, res) => {
 				res.status(202).json({
 					message: 'user session removed',
 					success: true,
-				});
-			} else {
-				res.status(202).json({
-					message: 'cant remove the session',
-					success: false,
 				});
 			}
 		});
@@ -119,16 +118,17 @@ router.post('/logout', (req, res) => {
 router.get('/login/check', (req, res) => {
 	var token = req.header('x-access-token');
 	if (token) {
-		checkMyToken(token, (expired) => {
-			if (expired) {
-				res.status(404).json({
-					message: 'The token has expired',
+		checkMyToken(token, (err, expired) => {
+			if (err) {
+				res.status(202).json({
+					message: 'The token is still valid',
 					success: true,
 					expired,
 				});
-			} else {
-				res.status(202).json({
-					message: 'The token is still valid',
+			}
+			else {
+				res.status(404).json({
+					message: 'The token has expired',
 					success: true,
 					expired,
 				});
