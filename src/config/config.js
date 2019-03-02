@@ -61,7 +61,7 @@ const local = {
 
 const config = {
 	deploy,
-	local
-}
+	local,
+};
 
 module.exports = config[deployType];
