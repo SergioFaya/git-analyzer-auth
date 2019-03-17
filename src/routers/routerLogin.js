@@ -54,6 +54,13 @@ router.get('/auth', (req, res) => {
 		.set('Accept', 'application/json')
 		.then((result) => {
 			const accessToken = result.body.access_token;
+			res.status(202).json({
+				message: 'Successfully authenticated',
+				token: 'mytoken',
+				accessToken,
+				success: true,
+			});
+			/*
 			createUserToken(accessToken, (err, mytoken) => {
 				if (err) {
 					res.status(500).json({
@@ -64,6 +71,7 @@ router.get('/auth', (req, res) => {
 					});
 				} else {
 					// Changing to redirect to angular
+					// FIXME: aqui esta la mierda
 					res.status(202).json({
 						message: 'Successfully authenticated',
 						token: mytoken,
@@ -72,6 +80,7 @@ router.get('/auth', (req, res) => {
 					});
 				}
 			});
+			*/
 		}).catch((err) => {
 			logger.log({
 				date: Date.now().toString(),
