@@ -65,3 +65,6 @@ typings/
 # debug vscode settings
 .vscode/
 
+#Ruby database
+*.rdb
+
