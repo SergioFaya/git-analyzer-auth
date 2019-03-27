@@ -50,7 +50,7 @@ module.exports = {
                 callback(null, reply);
             }
         });
-    }, existsUser: (token) => {
+    }, existsUser: (token, callback) => {
         redis_cli.exists(token, (err, reply) => {
             if (err) {
                 logger.log({
@@ -66,5 +66,35 @@ module.exports = {
                 callback(null, reply == 1);
             }
         });
-    }
+    }, saveTemporary: (state, token, callback) => {
+        redis_cli.hset('sockets', state, token, (err, reply) => {
+            if (err) {
+                logger.log({
+                    date: Date.now().toString(),
+                    level: 'error',
+                    message: 'Can not save in hash',
+                    trace: err.message,
+                    token,
+                });
+                callback(err);
+            } else {
+                callback(null, reply);
+            }
+        });
+    }, getTemporary: (state, callback) => {
+        redis_cli.hget('sockets', state, (err, reply) =>{
+            if (err) {
+                logger.log({
+                    date: Date.now().toString(),
+                    level: 'error',
+                    message: 'Can not get from hash',
+                    trace: err.message,
+                    token,
+                });
+                callback(err);
+            } else {
+                callback(null, reply);
+            }            
+        });
+    },
 }

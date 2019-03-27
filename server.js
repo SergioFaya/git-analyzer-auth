@@ -7,14 +7,14 @@ const bodyParser = require('body-parser');
 // fs for reading the private key and convert it to a buffer
 const fs = require('fs');
 
-const cors = require('cors');
+// const cors = require('cors');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 //app.use(cors());
 
 // alow cors
 app.use((_req, res, next) => {
-	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
 	res.header('Access-Control-Allow-Credentials', 'true');
 	res.header('Access-Control-Allow-Methods', 'POST, GET, DELETE, UPDATE, PUT');
 	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, token');
@@ -40,8 +40,16 @@ app.use((req, res) => {
 </html>`);
 });
 
+
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
+io.on('connection', function (socket) {
+    console.log('a user connected');
+});
+
 // listen(port,host,backlog,callback)
-app.listen(config.app.port, config.app.source, () => {
+http.listen(config.app.port, config.app.source, () => {
 	console.log('running on port', config.app.port);
 	logger.log({
 		date: Date.now().toString(),

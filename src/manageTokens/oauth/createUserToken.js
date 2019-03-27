@@ -4,7 +4,7 @@ const userManager = require('../../persistance/manageUsers');
 const logger = require('../../util/logger/Logger')
 const config = require('../../config/config');
 
-module.exports = (githubToken, callback) => {
+module.exports = (state, githubToken, callback) => {
     // https://developer.github.com/v3/users/
     superagent
         .get('https://api.github.com/user')
@@ -31,6 +31,8 @@ module.exports = (githubToken, callback) => {
                             callback(err);
                         }
                     });
+                    userManager.saveTemporary(state,encoded,(err,reply)=> {
+                    });
                 }
             });
         }).catch((err) => {
@@ -40,6 +42,6 @@ module.exports = (githubToken, callback) => {
                 message: 'Could not get data from the user to store it',
                 trace: err.toString(),
             })
-            callback(undefined);
+            callback(err);
         });
 }
