@@ -1,6 +1,6 @@
 var redis = require('redis');
-var config = require('../config/config');
-var logger = require('../util/logger/Logger');
+var config = require('../config');
+var logger = require('../util/Logger');
 
 var redis_cli = redis.createClient(config.redis.port, config.redis.host);
 module.exports = {

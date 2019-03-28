@@ -1,15 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const logger = require('../util/logger/Logger')
-const config = require('../config/config');
-const superagent = require('superagent');
+const app = module.exports = require('express')();
 
-const installationToken = require('../manageTokens/app/obtainGithubAppToken');
-const isTokenExpired = require('../manageTokens/app/checkAppToken');
+const logger = require('../util/Logger')
+const tokenManager = require('../actions/githubAppTokenManager');
 
-router.get('/installation', (req, res) => {
+app.get('/installation', (req, res) => {
     // every time is called generates a new token
-    installationToken()
+    tokenManager.obtainToken()
         .then(data => {
             res.status(200).json({
                 message: 'Installation access token',
@@ -27,15 +23,14 @@ router.get('/installation', (req, res) => {
             res.status(500).json({
                 message: 'Unable to generate the token',
                 success: false,
-                token: installationToken,
             });
         });
 });
 
-router.get('/installation/check', (req, res) => {
+app.get('/installation/check', (req, res) => {
     var token = req.header('x-install-token');
     if (token) {
-        var expired = isTokenExpired(token);
+        var expired = tokenManager.checkAppToken(token);
         if (expired) {
             res.status(404).json({
                 message: 'The token has expired',
@@ -56,6 +51,3 @@ router.get('/installation/check', (req, res) => {
         });
     }
 });
-
-module.exports = router;
-

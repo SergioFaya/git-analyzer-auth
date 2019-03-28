@@ -1,21 +1,9 @@
-const express = require('express');
-const router = express.Router();
+const app = module.exports = require('express')();
 
-const logger = require('../util/logger/Logger')
-const config = require('../config/config');
+const config = require('../config');
 const superagent = require('superagent');
+var tokenManager = require('../actions/tokenManager');
 
-var checkMyToken = require('../manageTokens/oauth/checkMyToken');
-var cancelToken = require('../manageTokens/oauth/cancelToken');
-var createUserToken = require('../manageTokens/oauth/createUserToken');
-
-function generateRandomState(length) {
-	var text = "";
-	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	for (var i = 0; i < length; i++)
-		text += possible.charAt(Math.floor(Math.random() * possible.length));
-	return text;
-}
 /**
  * https://github.com/login/oauth/authorize?client_id={{client_id}}&scope={{scope}}
  * Sends the app information neccesary to authenticate the user for this app
@@ -25,19 +13,24 @@ function generateRandomState(length) {
  * Scopes -> several scopes are separed by a space
  * https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
  */
-
-router.get('/login', (req, res) => {
-	// send the redirection address that will be handled by the client
-	
-	var state = generateRandomState(8);
-	//createSocketRoute(state);
-	res.status(202).json({
-		success: true,
-		data: `https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}&state=${state}`
-	});
-
+app.get('/login', (req, res) => {
 	// does not work when consumed as api by the angular client
 	// res.status(302).redirect(`https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}`);
+	var state = generateRandomState(8);
+	var sockets = require('../actions/websockets');
+	sockets.addEventListener('asd')
+		.then(() => {
+			res.status(202).json({
+				success: true,
+				data: `https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}&state=${state}`
+			});
+		}).catch((err) => {
+			console.log(err)
+			res.status(404).json({
+				success: false,
+				data: `#`
+			});
+		});
 });
 
 /**
@@ -50,7 +43,7 @@ router.get('/login', (req, res) => {
  * If the client_id, client_secret and code are correct
  * github sends back the acess token, which we store in our db
  */
-router.get('/auth', (req, res) => {
+app.get('/auth', (req, res) => {
 	const state = req.query.state;
 	superagent
 		.post('https://github.com/login/oauth/access_token')
@@ -62,7 +55,7 @@ router.get('/auth', (req, res) => {
 		.set('Accept', 'application/json')
 		.then((result) => {
 			const accessToken = result.body.access_token;
-			createUserToken(state, accessToken, (err, mytoken) => {
+			tokenManager.createToken(state, accessToken, (err, mytoken) => {
 				if (err) {
 					res.status(500).json({
 						message: 'Could not authenticate',
@@ -93,10 +86,10 @@ router.get('/auth', (req, res) => {
 		});
 });
 
-router.post('/logout', (req, res) => {
+app.post('/logout', (req, res) => {
 	var token = req.header('x-access-token');
 	if (token) {
-		cancelToken(token, (err, result) => {
+		tokenManager.cancelToken(token, (err, result) => {
 			if (err) {
 				res.status(202).json({
 					message: 'cant remove the session',
@@ -122,10 +115,10 @@ router.post('/logout', (req, res) => {
 	}
 });
 
-router.get('/login/check', (req, res) => {
+app.get('/login/check', (req, res) => {
 	var token = req.header('x-access-token');
 	if (token) {
-		checkMyToken(token, (err, expired) => {
+		tokenManager.checkToken(token, (err, expired) => {
 			if (err) {
 				res.status(202).json({
 					message: 'The token is still valid',
@@ -149,6 +142,10 @@ router.get('/login/check', (req, res) => {
 	}
 });
 
-
-module.exports = router;
-
+function generateRandomState(length) {
+	var text = "";
+	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	for (var i = 0; i < length; i++)
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	return text;
+}
