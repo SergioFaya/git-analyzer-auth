@@ -1,5 +1,5 @@
 const app = module.exports = require('express')();
-
+const path = require('path');
 const config = require('../config');
 var superagent = require('superagent');
 var tokenManager = require('../actions/tokenManager');
@@ -58,21 +58,27 @@ app.get('/auth', (req, res) => {
 			const accessToken = result.body.access_token;
 			tokenManager.createToken(state, accessToken, (err, mytoken) => {
 				if (err) {
+					/*
 					res.status(500).json({
 						message: 'Could not authenticate',
 						success: false,
 						err
-					});
+					});*/
+					res.sendFile(path.join(__dirname + '/../views/error.html'));
+
 				} else {
 					var sockets = require('../actions/websockets');
 					sockets.sendMessageToSocket(state, { token: mytoken, githubToken: accessToken })
 						.then(() => {
+							/*
 							res.status(202).json({
 								message: 'Successfully authenticated',
 								token: mytoken,
 								accessToken,
 								success: true,
 							});
+							*/
+							res.sendFile(path.join(__dirname + '/../views/success.html'));
 						});
 				}
 			});
@@ -83,16 +89,19 @@ app.get('/auth', (req, res) => {
 				message: 'error when getting the github access token',
 				trace: err,
 			});
+			/*
 			res.status(404).json({
 				message: 'ERROR: cannot get the access token',
 				success: false,
 				err,
 			});
+			*/
+			res.sendFile(path.join(__dirname + '/../views/error.html'));
 		});
 });
 
 app.post('/logout', (req, res) => {
-	var token = req.header('x-access-token');
+	var token = req.body['x-access-token'];
 	if (token) {
 		tokenManager.cancelToken(token, (err, result) => {
 			if (err) {
