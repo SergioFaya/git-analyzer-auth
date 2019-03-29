@@ -1,8 +1,9 @@
 const app = module.exports = require('express')();
 
 const config = require('../config');
-const superagent = require('superagent');
+var superagent = require('superagent');
 var tokenManager = require('../actions/tokenManager');
+const logger = require('./../util/Logger')
 
 /**
  * https://github.com/login/oauth/authorize?client_id={{client_id}}&scope={{scope}}
@@ -18,7 +19,7 @@ app.get('/login', (req, res) => {
 	// res.status(302).redirect(`https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}`);
 	var state = generateRandomState(8);
 	var sockets = require('../actions/websockets');
-	sockets.addEventListener('asd')
+	sockets.addEventListener(state)
 		.then(() => {
 			res.status(202).json({
 				success: true,
@@ -59,17 +60,20 @@ app.get('/auth', (req, res) => {
 				if (err) {
 					res.status(500).json({
 						message: 'Could not authenticate',
-						token: mytoken,
 						success: false,
 						err
 					});
 				} else {
-					res.status(202).json({
-						message: 'Successfully authenticated',
-						token: mytoken,
-						accessToken,
-						success: true,
-					});
+					var sockets = require('../actions/websockets');
+					sockets.sendMessageToSocket(state, { token: mytoken, githubToken: accessToken })
+						.then(() => {
+							res.status(202).json({
+								message: 'Successfully authenticated',
+								token: mytoken,
+								accessToken,
+								success: true,
+							});
+						});
 				}
 			});
 		}).catch((err) => {
@@ -82,6 +86,7 @@ app.get('/auth', (req, res) => {
 			res.status(404).json({
 				message: 'ERROR: cannot get the access token',
 				success: false,
+				err,
 			});
 		});
 });
@@ -120,15 +125,15 @@ app.get('/login/check', (req, res) => {
 	if (token) {
 		tokenManager.checkToken(token, (err, expired) => {
 			if (err) {
-				res.status(202).json({
-					message: 'The token is still valid',
+				res.status(404).json({
+					message: 'The token has expired',
 					success: true,
 					expired,
 				});
 			}
 			else {
-				res.status(404).json({
-					message: 'The token has expired',
+				res.status(202).json({
+					message: 'The token is still valid',
 					success: true,
 					expired,
 				});
