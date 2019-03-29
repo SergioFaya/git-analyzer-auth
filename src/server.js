@@ -10,17 +10,20 @@ const fs = require('fs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // allow cors
-const cors = require('cors')
-var whitelist = ['http://localhost:4200', 'http://localhost:3001']
+const cors = require('cors');
+var whitelist = ['http://localhost:4200', 'http://localhost:3001', undefined];
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
+			// trampa para lo de github
+			// callback(null, true)
+			console.log(origin);
       callback(new Error('Not allowed by CORS'))
     }
   }
-}
+};
 app.use(cors(corsOptions));
 // router usage
 app.use(routes);
