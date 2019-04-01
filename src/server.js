@@ -1,6 +1,6 @@
 const express = require('express');
 const app = new express();
-const logger = require('./util/Logger')
+const logger = require('./util/Logger');
 const config = require('./config');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
@@ -13,16 +13,14 @@ app.use(bodyParser.json());
 const cors = require('cors');
 var whitelist = ['http://localhost:4200', 'http://localhost:3001', undefined];
 var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-			// trampa para lo de github
-			// callback(null, true)
-			console.log(origin);
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
+	origin: function (origin, callback) {
+		if (whitelist.indexOf(origin) !== -1) {
+			callback(null, true);
+		} else {
+			logger.log('error', `cors -> ${origin}`);
+			callback(new Error('Not allowed by CORS'));
+		}
+	}
 };
 app.use(cors(corsOptions));
 // router usage
