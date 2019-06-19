@@ -3,13 +3,13 @@ const path = require('path');
 const config = require('../config');
 var superagent = require('superagent');
 var tokenManager = require('../actions/tokenManager');
-const logger = require('../util/Logger')
+const logger = require('../util/Logger');
 
 /**
  * https://github.com/login/oauth/authorize?client_id={{client_id}}&scope={{scope}}
  * Sends the app information neccesary to authenticate the user for this app
  * https://developer.github.com/v3/oauth_authorizations/
- * 
+ *
  * We send github the client id with the scope of the authentication we want to obtain
  * Scopes -> several scopes are separed by a space
  * https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
@@ -26,19 +26,22 @@ app.get('/login', (req, res) => {
 				data: `https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}&state=${state}`
 			});
 		}).catch((err) => {
-			console.log(err)
+			logger.log({
+				level: 'error',
+				err
+			});
 			res.status(404).json({
 				success: false,
-				data: `#`
+				data: '#'
 			});
 		});
 });
 
 /**
  * After /login github sends to our desired url the access code
- * 
+ *
  * Then to ensure the authentication is correct, the client_id
- * the secret_id and the received code are sent back again to 
+ * the secret_id and the received code are sent back again to
  * github
  * -
  * If the client_id, client_secret and code are correct
@@ -59,12 +62,14 @@ app.get('/auth', (req, res) => {
 			tokenManager.createToken(state, accessToken, (err, mytoken) => {
 				if (err) {
 					res.sendFile(path.join(__dirname + '/../views/error.html'));
-
 				} else {
 					var sockets = require('../actions/websockets');
 					sockets.sendMessageToSocket(state, { token: mytoken, githubToken: accessToken })
 						.then(() => {
+<<<<<<< HEAD
 							console.log({ token: mytoken, githubToken: accessToken });
+=======
+>>>>>>> develop
 							res.sendFile(path.join(__dirname + '/../views/success.html'));
 						});
 				}
@@ -137,8 +142,8 @@ app.get('/login/check', (req, res) => {
 });
 
 function generateRandomState(length) {
-	var text = "";
-	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	var text = '';
+	var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	for (var i = 0; i < length; i++)
 		text += possible.charAt(Math.floor(Math.random() * possible.length));
 	return text;
