@@ -18,7 +18,6 @@ module.exports = {
 	}, sendMessageToSocket: (state, jsonMessage) => {
 		return new Promise((resolve, reject) => {
 			sockets[state].emit(state, jsonMessage);
-			// TODO: elimiar el socket una vez se envie la contraseña
 			resolve();
 		});
 

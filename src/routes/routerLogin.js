@@ -66,10 +66,6 @@ app.get('/auth', (req, res) => {
 					var sockets = require('../actions/websockets');
 					sockets.sendMessageToSocket(state, { token: mytoken, githubToken: accessToken })
 						.then(() => {
-<<<<<<< HEAD
-							console.log({ token: mytoken, githubToken: accessToken });
-=======
->>>>>>> develop
 							res.sendFile(path.join(__dirname + '/../views/success.html'));
 						});
 				}
