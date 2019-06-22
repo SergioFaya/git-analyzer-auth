@@ -25,10 +25,6 @@ const deploy = {
 		port: 6379,
 		host: 'redis-auth.wn9iyk.0001.euw1.cache.amazonaws.com'
 	},
-	resources: {
-		private_key: './resources/private-key.pem',
-		private_key_buffer: undefined,
-	},
 };
 
 const local = {
@@ -52,12 +48,8 @@ const local = {
 	redis: {
 		port: 6379,
 		host: ''
-	},
-	resources: {
-		private_key: './resources/private-key.pem',
-		private_key_buffer: undefined,
-	},
-}
+	}
+};
 
 const config = {
 	deploy,

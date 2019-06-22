@@ -1,12 +1,11 @@
 const express = require('express');
 const app = new express();
-const logger = require('./util/Logger');
+const logger = require('./logger/Logger');
 const config = require('./config');
 const bodyParser = require('body-parser');
-const routes = require('./routes');
-const sockets = require('./actions/websockets');
-// fs for reading the private key and convert it to a buffer
-const fs = require('fs');
+const routerLogin = require('./routes/routerLogin');
+const sockets = require('./actions/websocketManager');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // allow cors
@@ -24,8 +23,13 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 // router usage
-app.use(routes);
-
+app.use(routerLogin);
+app.all('*', (_req,res)=>{
+	res.status(404).json({
+		success: false,
+		message: 'Not found'
+	});
+});
 // init the servers
 const http = require('http').Server(app);
 sockets.init(http);
@@ -36,17 +40,5 @@ http.listen(config.app.port, config.app.source, () => {
 		date: Date.now().toString(),
 		level: 'info',
 		message: `Server started on port ${config.app.port}`,
-	});
-	fs.readFile(config.resources.private_key, (err, data) => {
-		if (err) {
-			logger.log({
-				date: Date.now().toString(),
-				level: 'error',
-				message: 'Error when reading the private key certificate',
-				trace: err,
-			});
-		} else {
-			config.resources.private_key_buffer = data;
-		}
 	});
 });

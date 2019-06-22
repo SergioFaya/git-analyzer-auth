@@ -7,7 +7,7 @@ module.exports = winston.createLogger({
 	),
 	levels: winston.config.syslog.levels,
 	transports: [
-		new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+		new winston.transports.File({ filename: '../logs/auth/error.log', level: 'error' }),
 		new winston.transports.Console({
 				format: winston.format.combine(
 					winston.format.simple(),
@@ -15,7 +15,6 @@ module.exports = winston.createLogger({
 			),
 			level: 'error',
 		}),
-		new winston.transports.File({ filename: 'logs/info.log', level: 'info' }),
+		new winston.transports.File({ filename: '../logs/auth/info.log', level: 'info' }),
 	],
 });
-

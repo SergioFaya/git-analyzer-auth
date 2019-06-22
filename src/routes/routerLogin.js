@@ -2,8 +2,8 @@ const app = module.exports = require('express')();
 const path = require('path');
 const config = require('../config');
 var superagent = require('superagent');
-var tokenManager = require('../actions/tokenManager');
-const logger = require('../util/Logger');
+var tokenManager = require('../actions/userTokenManager');
+const logger = require('../logger/Logger');
 
 /**
  * https://github.com/login/oauth/authorize?client_id={{client_id}}&scope={{scope}}
@@ -18,7 +18,7 @@ app.get('/login', (req, res) => {
 	// does not work when consumed as api by the angular client
 	// res.status(302).redirect(`https://github.com/login/oauth/authorize?client_id=${config.oauth.client_id}&scope=${config.oauth.scopes[0]}%20${config.oauth.scopes[1]}`);
 	var state = generateRandomState(8);
-	var sockets = require('../actions/websockets');
+	var sockets = require('../actions/websocketManager');
 	sockets.addEventListener(state)
 		.then(() => {
 			res.status(202).json({
@@ -63,7 +63,7 @@ app.get('/auth', (req, res) => {
 				if (err) {
 					res.sendFile(path.join(__dirname + '/../views/error.html'));
 				} else {
-					var sockets = require('../actions/websockets');
+					var sockets = require('../actions/websocketManager');
 					sockets.sendMessageToSocket(state, { token: mytoken, githubToken: accessToken })
 						.then(() => {
 							res.sendFile(path.join(__dirname + '/../views/success.html'));

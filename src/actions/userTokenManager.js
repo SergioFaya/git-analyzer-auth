@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const userManager = require('../persistance/manageUsers');
 var superagent = require('superagent');
-const logger = require('../util/Logger');
+const logger = require('../logger/Logger');
 const config = require('../config');
 module.exports = {
 	createToken: (state, githubToken, callback) => {
