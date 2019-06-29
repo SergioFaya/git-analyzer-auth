@@ -9,6 +9,8 @@ const deploy = {
 		source: '0.0.0.0',
 		// change the secret on release
 		tokenSecret: 'WjKJHMvaLkEnfsN3JHFY',
+		clientHost: 'http://156.35.163.128:8080',
+		serverHost: 'http://156.35.163.128:3001',
 	},
 	oauth: {
 		client_id: 'c4c42af4e127583d6c40',

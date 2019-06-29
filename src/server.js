@@ -10,9 +10,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // allow cors
 const cors = require('cors');
-var whitelist = ['http://localhost:4200', 'http://localhost:3001', undefined];
+var whitelist = [config.clientHost,config.serverHost, undefined];
 var corsOptions = {
-	origin: function (origin, callback) {
+	origin: (origin, callback) => {
 		if (whitelist.indexOf(origin) !== -1) {
 			callback(null, true);
 		} else {
