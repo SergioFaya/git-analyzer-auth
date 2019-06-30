@@ -10,9 +10,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 // allow cors
 const cors = require('cors');
-var whitelist = ['http://localhost:4200', 'http://localhost:3001', undefined];
+var whitelist = ['http://156.35.163.128:8080', 'http://156.35.163.128:3001', undefined];
+
 var corsOptions = {
-	origin: function (origin, callback) {
+	origin: (origin, callback) => {
 		if (whitelist.indexOf(origin) !== -1) {
 			callback(null, true);
 		} else {
