@@ -31,8 +31,6 @@ module.exports = {
 								callback(err);
 							}
 						});
-						userManager.saveTemporary(state, encoded, (err, reply) => {
-						});
 					}
 				});
 			}).catch((err) => {
