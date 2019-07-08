@@ -11,6 +11,7 @@ module.exports = {
 			.set('Accept', 'application/json')
 			.set('Authorization', `token ${githubToken}`)
 			.then((result) => {
+				
 				var payload = {
 					id: result.body.id,
 					githubToken,
@@ -33,6 +34,7 @@ module.exports = {
 						});
 					}
 				});
+				
 			}).catch((err) => {
 				logger.log({
 					date: Date.now().toString(),
