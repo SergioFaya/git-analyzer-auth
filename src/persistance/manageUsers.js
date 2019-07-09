@@ -3,7 +3,11 @@ var config = require('../config/index');
 var logger = require('../logger/Logger');
 
 var redis_cli = redis.createClient(config.redis.port, config.redis.host);
+/**
+ * Provides functionalities to access the redis database
+ */
 module.exports = {
+	/**Returns the information of a user register */
 	getUser: (token, callback) => {
 		redis_cli.get(token, (err, reply) => {
 			if (err) {
@@ -19,6 +23,7 @@ module.exports = {
 				callback(null, reply);
 			}
 		});
+		/**Stores a user register in the database */
 	}, setUser: (token, userId, callback) => {
 		redis_cli.set(token, userId, (err, reply) => {
 			if (err) {
@@ -35,6 +40,7 @@ module.exports = {
 				callback(null, reply);
 			}
 		});
+		/** Deletes a user register from the database */
 	}, deleteUser: (token, callback) => {
 		redis_cli.del(token, (err, reply) => {
 			if (err) {
@@ -50,6 +56,7 @@ module.exports = {
 				callback(null, reply);
 			}
 		});
+		/** Checks the existance of a user*/
 	}, existsUser: (token, callback) => {
 		redis_cli.exists(token, (err, reply) => {
 			if (err) {

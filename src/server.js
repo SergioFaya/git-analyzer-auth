@@ -12,6 +12,9 @@ app.use(bodyParser.json());
 const cors = require('cors');
 var whitelist = ['http://156.35.163.128:8080', 'http://156.35.163.128:3001', undefined];
 
+/**
+ * Defines the cors options
+ */
 var corsOptions = {
 	origin: (origin, callback) => {
 		if (whitelist.indexOf(origin) !== -1) {
